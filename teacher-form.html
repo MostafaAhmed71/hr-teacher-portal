@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>فورم بيانات المعلمين</title>
+  <meta name="description" content="فورم إلكتروني لتسجيل بيانات المعلمين — النظام الداخلي لقسم الموارد البشرية." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --gold: #c9a84c;
+      --gold-light: #e8c97a;
+      --gold-dark: #9a7a2e;
+      --bg: #0f0e0c;
+      --bg2: #18160f;
+      --bg3: #221e12;
+      --bg4: #2d2818;
+      --card: #1c1a10;
+      --card2: #252010;
+      --border: #3a3220;
+      --border-gold: #6b5a28;
+      --text: #f0e8d0;
+      --text2: #b8a878;
+      --text3: #7a6d4a;
+      --red: #e05050;
+      --green: #4caf80;
+      --shadow: 0 8px 40px rgba(0,0,0,0.6);
+      --radius: 14px;
+      --radius-sm: 8px;
+      --transition: 0.25s ease;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Tajawal', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      direction: rtl;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 10%, rgba(201,168,76,0.07) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 80% at 80% 90%, rgba(201,168,76,0.05) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .site-header {
+      position: relative;
+      z-index: 10;
+      background: linear-gradient(135deg, var(--bg2) 0%, var(--bg3) 100%);
+      border-bottom: 1px solid var(--border-gold);
+      padding: 18px 32px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: 0 2px 24px rgba(0,0,0,0.5);
+    }
+
+    .header-logo {
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+      box-shadow: 0 0 20px rgba(201,168,76,0.3);
+      flex-shrink: 0;
+    }
+
+    .header-text h1 { font-size: 1.25rem; font-weight: 800; color: var(--gold-light); }
+    .header-text p  { font-size: 0.8rem; color: var(--text3); margin-top: 2px; }
+
+    .header-badge {
+      margin-right: auto;
+      background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+      color: #1a1500;
+      font-size: 0.72rem; font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 20px;
+    }
+
+    .page { position: relative; z-index: 1; display: none; padding: 40px 20px 80px; max-width: 860px; margin: 0 auto; }
+    .page.active { display: block; }
+
+    .card {
+      background: linear-gradient(160deg, var(--card) 0%, var(--card2) 100%);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 36px 40px;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; right: 0; left: 0; height: 3px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+
+    .card-title { font-size: 1.35rem; font-weight: 800; color: var(--gold-light); margin-bottom: 6px; }
+    .card-subtitle { font-size: 0.85rem; color: var(--text3); margin-bottom: 32px; }
+
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 24px; }
+    .form-group { display: flex; flex-direction: column; gap: 7px; }
+    .form-group.full { grid-column: 1 / -1; }
+
+    label { font-size: 0.85rem; font-weight: 600; color: var(--text2); display: flex; align-items: center; gap: 6px; }
+    label .req { color: var(--gold); }
+
+    input[type="text"], input[type="email"], input[type="tel"], input[type="date"], textarea, select {
+      background: var(--bg3);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-family: 'Tajawal', sans-serif;
+      font-size: 0.95rem;
+      padding: 11px 14px;
+      outline: none;
+      transition: border-color var(--transition), box-shadow var(--transition);
+      width: 100%;
+    }
+    input:focus, textarea:focus, select:focus {
+      border-color: var(--gold-dark);
+      box-shadow: 0 0 0 3px rgba(201,168,76,0.12);
+    }
+    textarea { resize: vertical; min-height: 90px; }
+    input[type="date"] { direction: ltr; text-align: right; }
+
+    .file-upload-area {
+      border: 2px dashed var(--border-gold);
+      border-radius: var(--radius-sm);
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color var(--transition), background var(--transition);
+      position: relative;
+      background: var(--bg2);
+    }
+    .file-upload-area:hover, .file-upload-area.drag { border-color: var(--gold); background: rgba(201,168,76,0.05); }
+    .file-upload-area input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+    .upload-icon { font-size: 2rem; margin-bottom: 8px; }
+    .upload-label { font-size: 0.82rem; color: var(--text3); }
+    .upload-label strong { color: var(--gold); }
+    .preview-thumb { width: 100%; max-height: 130px; object-fit: cover; border-radius: 6px; margin-top: 10px; display: none; border: 1px solid var(--border-gold); }
+
+    .checkbox-group { display: flex; flex-wrap: wrap; gap: 10px; }
+    .check-chip {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--bg3);
+      border: 1.5px solid var(--border);
+      border-radius: 30px;
+      padding: 8px 18px;
+      cursor: pointer;
+      font-size: 0.88rem; font-weight: 600;
+      color: var(--text2);
+      transition: all var(--transition);
+      user-select: none;
+    }
+    .check-chip input[type="checkbox"] { display: none; }
+    .check-chip:hover { border-color: var(--gold-dark); color: var(--text); }
+    .check-chip.checked { background: linear-gradient(135deg, var(--gold-dark), var(--gold)); border-color: var(--gold); color: #1a1500; }
+
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      font-family: 'Tajawal', sans-serif; font-size: 0.95rem; font-weight: 700;
+      padding: 13px 28px;
+      border-radius: var(--radius-sm);
+      border: none; cursor: pointer;
+      transition: all var(--transition); outline: none;
+    }
+    .btn-primary { background: linear-gradient(135deg, var(--gold-dark) 0%, var(--gold) 100%); color: #1a1500; box-shadow: 0 4px 20px rgba(201,168,76,0.25); }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 28px rgba(201,168,76,0.4); }
+    .btn-primary:active { transform: translateY(0); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .btn-ghost { background: transparent; border: 1.5px solid var(--border-gold); color: var(--text2); }
+    .btn-ghost:hover { border-color: var(--gold); color: var(--gold-light); background: rgba(201,168,76,0.06); }
+    .btn-green { background: linear-gradient(135deg, #2e7d5a, var(--green)); color: #fff; box-shadow: 0 4px 16px rgba(76,175,128,0.2); }
+    .btn-green:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(76,175,128,0.35); }
+
+    .alert { padding: 12px 18px; border-radius: var(--radius-sm); font-size: 0.88rem; font-weight: 500; display: none; margin-top: 16px; }
+    .alert.show { display: block; }
+    .alert-success { background: rgba(76,175,128,0.12); border: 1px solid rgba(76,175,128,0.3); color: var(--green); }
+    .alert-error   { background: rgba(224,80,80,0.1);   border: 1px solid rgba(224,80,80,0.3);   color: var(--red); }
+
+    .pw-card {
+      background: linear-gradient(160deg, var(--card) 0%, var(--card2) 100%);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 48px 40px;
+      box-shadow: var(--shadow);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .pw-card::before { content: ''; position: absolute; top: 0; right: 0; left: 0; height: 3px; background: linear-gradient(90deg, transparent, var(--gold), transparent); }
+    .pw-icon { font-size: 3.5rem; margin-bottom: 16px; }
+    .pw-title { font-size: 1.4rem; font-weight: 800; color: var(--gold-light); margin-bottom: 8px; }
+    .pw-subtitle { font-size: 0.85rem; color: var(--text3); margin-bottom: 28px; }
+
+    #page-hr { max-width: 1400px; }
+    .hr-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 28px; }
+    .hr-stats { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 28px; }
+    .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 18px 24px; flex: 1; min-width: 160px; position: relative; overflow: hidden; }
+    .stat-card::before { content: ''; position: absolute; top: 0; right: 0; bottom: 0; width: 4px; background: linear-gradient(180deg, var(--gold), var(--gold-dark)); border-radius: 0 4px 4px 0; }
+    .stat-value { font-size: 2rem; font-weight: 800; color: var(--gold-light); }
+    .stat-label { font-size: 0.78rem; color: var(--text3); margin-top: 4px; }
+
+    .table-wrapper { overflow-x: auto; border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow); }
+    table { width: 100%; border-collapse: collapse; min-width: 1100px; }
+    thead tr { background: linear-gradient(90deg, var(--bg3), var(--bg4)); border-bottom: 2px solid var(--border-gold); }
+    th { padding: 14px 16px; text-align: right; font-size: 0.8rem; font-weight: 700; color: var(--gold); white-space: nowrap; }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background var(--transition); }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: rgba(201,168,76,0.04); }
+    td { padding: 12px 16px; font-size: 0.84rem; color: var(--text2); vertical-align: middle; }
+    td.td-name { font-weight: 700; color: var(--text); }
+    td.td-index { color: var(--text3); font-size: 0.75rem; font-weight: 600; }
+
+    .sections-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+    .sec-tag { background: rgba(201,168,76,0.12); border: 1px solid var(--border-gold); color: var(--gold-light); font-size: 0.72rem; font-weight: 600; padding: 2px 10px; border-radius: 20px; }
+
+    .thumb-container { display: flex; gap: 6px; flex-wrap: wrap; }
+    .thumb { width: 44px; height: 44px; object-fit: cover; border-radius: 6px; border: 1.5px solid var(--border-gold); cursor: pointer; transition: transform var(--transition), box-shadow var(--transition); }
+    .thumb:hover { transform: scale(1.1); box-shadow: 0 4px 16px rgba(0,0,0,0.6); }
+    .thumb-placeholder { width: 44px; height: 44px; border-radius: 6px; border: 1.5px dashed var(--border); display: flex; align-items: center; justify-content: center; font-size: 0.65rem; color: var(--text3); }
+
+    #lightbox { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
+    #lightbox.show { display: flex; }
+    #lightbox img { max-width: 100%; max-height: 90vh; object-fit: contain; border-radius: 8px; }
+    #lightbox-close { position: absolute; top: 20px; left: 20px; background: rgba(255,255,255,0.1); border: 1.5px solid rgba(255,255,255,0.2); color: #fff; width: 40px; height: 40px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background var(--transition); }
+    #lightbox-close:hover { background: rgba(255,255,255,0.2); }
+    #lightbox-label { position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.7); color: var(--gold-light); font-size: 0.85rem; font-weight: 600; padding: 6px 18px; border-radius: 20px; }
+
+    .empty-state { text-align: center; padding: 80px 20px; color: var(--text3); }
+    .empty-state .empty-icon { font-size: 3rem; margin-bottom: 16px; }
+
+    .spinner { display: inline-block; width: 18px; height: 18px; border: 3px solid rgba(255,255,255,0.2); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    #success-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 900; align-items: center; justify-content: center; flex-direction: column; text-align: center; padding: 30px; }
+    #success-overlay.show { display: flex; }
+    .success-check { font-size: 5rem; animation: pop 0.5s ease; }
+    @keyframes pop { 0%{transform:scale(0)} 70%{transform:scale(1.15)} 100%{transform:scale(1)} }
+    #success-overlay h2 { font-size: 1.8rem; font-weight: 800; color: var(--green); margin: 20px 0 10px; }
+    #success-overlay p { color: var(--text2); font-size: 0.95rem; max-width: 400px; margin: 0 auto 28px; }
+
+    .divider { height: 1px; background: linear-gradient(90deg, transparent, var(--border), transparent); margin: 28px 0; }
+
+    .search-bar { background: var(--bg3); border: 1.5px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-family: 'Tajawal', sans-serif; font-size: 0.9rem; padding: 10px 16px; outline: none; width: 240px; transition: border-color var(--transition); }
+    .search-bar:focus { border-color: var(--gold-dark); }
+
+    @media (max-width: 640px) {
+      .form-grid { grid-template-columns: 1fr; }
+      .card { padding: 24px 18px; }
+      .pw-card { padding: 36px 24px; }
+      .site-header { padding: 14px 18px; }
+      .header-badge { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="site-header">
+  <div class="header-logo">&#127979;</div>
+  <div class="header-text">
+    <h1 id="header-title">فورم بيانات المعلمين</h1>
+    <p id="header-sub">النظام الداخلي — الموارد البشرية</p>
+  </div>
+  <span class="header-badge" id="header-badge">تعبئة البيانات</span>
+</header>
+
+<!-- PAGE: FORM -->
+<div class="page active" id="page-form">
+  <div class="card">
+    <div class="card-title">&#128203; بيانات المعلم</div>
+    <div class="card-subtitle">يرجى تعبئة جميع الحقول المطلوبة بدقة، وسيتم حفظها تلقائياً بعد الإرسال.</div>
+
+    <form id="teacher-form" novalidate>
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label for="f-name">الاسم الكامل <span class="req">*</span></label>
+          <input type="text" id="f-name" placeholder="مثال: أحمد عبدالله العمري" required />
+        </div>
+
+        <div class="form-group">
+          <label for="f-id">رقم الهوية الوطنية <span class="req">*</span></label>
+          <input type="text" id="f-id" placeholder="10 أرقام" maxlength="10" required />
+        </div>
+
+        <div class="form-group">
+          <label for="f-phone">رقم الجوال <span class="req">*</span></label>
+          <input type="tel" id="f-phone" placeholder="05XXXXXXXX" required />
+        </div>
+
+        <div class="form-group">
+          <label for="f-email">البريد الإلكتروني <span class="req">*</span></label>
+          <input type="email" id="f-email" placeholder="example@email.com" required />
+        </div>
+
+        <div class="form-group">
+          <label for="f-degree">المؤهل العلمي <span class="req">*</span></label>
+          <input type="text" id="f-degree" placeholder="مثال: بكالوريوس تربية / ماجستير..." required />
+        </div>
+
+        <div class="form-group">
+          <label for="f-major">التخصص <span class="req">*</span></label>
+          <input type="text" id="f-major" placeholder="مثال: رياضيات، لغة عربية..." required />
+        </div>
+
+        <div class="form-group">
+          <label for="f-position">العمل الحالي بالمدرسة <span class="req">*</span></label>
+          <input type="text" id="f-position" placeholder="مثال: معلم / مشرف / منسق..." required />
+        </div>
+
+        <div class="form-group">
+          <label for="f-startdate">تاريخ المباشرة الأول <span class="req">*</span></label>
+          <input type="date" id="f-startdate" required />
+        </div>
+
+        <div class="form-group full">
+          <label for="f-experience">الخبرات السابقة</label>
+          <textarea id="f-experience" placeholder="اذكر خبراتك السابقة في مجال التعليم أو المجالات ذات الصلة..."></textarea>
+        </div>
+
+        <div class="form-group full">
+          <label>القسم <span class="req">*</span></label>
+          <div class="checkbox-group" id="section-group">
+            <label class="check-chip"><input type="checkbox" value="ابتدائي" /> ابتدائي</label>
+            <label class="check-chip"><input type="checkbox" value="متوسط" /> متوسط</label>
+            <label class="check-chip"><input type="checkbox" value="ثانوي" /> ثانوي</label>
+            <label class="check-chip"><input type="checkbox" value="عالمي" /> عالمي</label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>صورة الهوية <span class="req">*</span></label>
+          <div class="file-upload-area" id="upload-id-area">
+            <input type="file" id="f-id-img" accept="image/*" />
+            <div class="upload-icon">&#128218;</div>
+            <div class="upload-label"><strong>اضغط لرفع صورة الهوية</strong><br/>JPG / PNG / WebP</div>
+            <img class="preview-thumb" id="preview-id" alt="معاينة الهوية" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>صورة الجواز</label>
+          <div class="file-upload-area" id="upload-pass-area">
+            <input type="file" id="f-pass-img" accept="image/*" />
+            <div class="upload-icon">&#128215;</div>
+            <div class="upload-label"><strong>اضغط لرفع صورة الجواز</strong><br/>JPG / PNG / WebP (اختياري)</div>
+            <img class="preview-thumb" id="preview-pass" alt="معاينة الجواز" />
+          </div>
+        </div>
+
+      </div>
+
+      <div class="divider"></div>
+
+      <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+        <button type="submit" class="btn btn-primary" id="submit-btn">&#9989; إرسال البيانات</button>
+        <button type="button" class="btn btn-ghost" id="reset-btn">&#128260; إعادة تعيين</button>
+      </div>
+
+      <div class="alert alert-error" id="form-error"></div>
+    </form>
+  </div>
+</div>
+
+<!-- PAGE: PASSWORD -->
+<div class="page" id="page-password" style="max-width:420px">
+  <div class="pw-card">
+    <div class="pw-icon">&#128274;</div>
+    <div class="pw-title">لوحة الموارد البشرية</div>
+    <div class="pw-subtitle">هذه المنطقة محمية. أدخل كلمة السر للمتابعة.</div>
+    <input type="password" id="pw-input"
+      placeholder="كلمة السر"
+      style="width:100%;background:var(--bg3);border:1.5px solid var(--border);
+             border-radius:var(--radius-sm);color:var(--text);font-family:'Tajawal',sans-serif;
+             font-size:1.1rem;padding:12px 16px;outline:none;text-align:center;
+             letter-spacing:0.15em;margin-bottom:12px;display:block;" />
+    <button class="btn btn-primary" id="pw-btn" style="width:100%;margin-bottom:12px;">&#128275; دخول</button>
+    <div class="alert alert-error" id="pw-error" style="margin-top:0;"></div>
+  </div>
+</div>
+
+<!-- PAGE: HR DASHBOARD -->
+<div class="page" id="page-hr" style="max-width:1400px">
+  <div class="hr-header">
+    <div>
+      <div class="card-title" style="font-size:1.5rem">&#128202; لوحة بيانات المعلمين</div>
+      <div class="card-subtitle" style="margin-bottom:0">جميع النماذج المُرسلة — للاستخدام الداخلي فقط</div>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+      <input type="text" class="search-bar" id="hr-search" placeholder="بحث بالاسم أو الهوية..." />
+      <button class="btn btn-green" id="export-btn">&#128229; تصدير Excel</button>
+      <button class="btn btn-ghost" id="logout-btn">&#128682; خروج</button>
+    </div>
+  </div>
+
+  <div class="hr-stats">
+    <div class="stat-card"><div class="stat-value" id="stat-total">0</div><div class="stat-label">إجمالي المعلمين</div></div>
+    <div class="stat-card"><div class="stat-value" id="stat-primary">0</div><div class="stat-label">ابتدائي</div></div>
+    <div class="stat-card"><div class="stat-value" id="stat-middle">0</div><div class="stat-label">متوسط</div></div>
+    <div class="stat-card"><div class="stat-value" id="stat-high">0</div><div class="stat-label">ثانوي</div></div>
+    <div class="stat-card"><div class="stat-value" id="stat-intl">0</div><div class="stat-label">عالمي</div></div>
+  </div>
+
+  <div class="table-wrapper">
+    <table id="hr-table">
+      <thead>
+        <tr>
+          <th>#</th><th>الاسم</th><th>رقم الهوية</th><th>الجوال</th>
+          <th>البريد الإلكتروني</th><th>المؤهل</th><th>التخصص</th>
+          <th>العمل الحالي</th><th>القسم</th><th>المباشرة</th>
+          <th>الخبرات</th><th>صورة الهوية</th><th>صورة الجواز</th><th>تاريخ الإرسال</th>
+        </tr>
+      </thead>
+      <tbody id="hr-tbody"></tbody>
+    </table>
+  </div>
+
+  <div class="empty-state" id="empty-state" style="display:none">
+    <div class="empty-icon">&#128205;</div>
+    <p>لا توجد بيانات مُرسلة حتى الآن.</p>
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div id="lightbox">
+  <button id="lightbox-close" title="إغلاق">&#10005;</button>
+  <img id="lightbox-img" src="" alt="صورة مكبّرة" />
+  <div id="lightbox-label"></div>
+</div>
+
+<!-- SUCCESS OVERLAY -->
+<div id="success-overlay">
+  <div class="success-check">&#9989;</div>
+  <h2>تم الإرسال بنجاح!</h2>
+  <p>تم حفظ بياناتك بنجاح. شكراً لك، يمكنك إغلاق هذه الصفحة الآن.</p>
+  <button class="btn btn-ghost" id="success-close">إرسال نموذج آخر</button>
+</div>
+
+<script>
+const STORAGE_KEY = 'hr_teachers_v1';
+const HR_PASSWORD = 'hr2026';
+const MAX_IMG_DIM = 900;
+const IMG_QUALITY = 0.75;
+
+let idImageB64   = null;
+let passImageB64 = null;
+let allRecords   = [];
+let filteredRec  = [];
+
+// ── ROUTING ──
+function route() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('view') === 'hr') {
+    showPage('password');
+    document.getElementById('header-badge').textContent = 'لوحة HR';
+    document.getElementById('header-title').textContent = 'الموارد البشرية';
+  } else {
+    showPage('form');
+  }
+}
+
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+}
+
+// ── IMAGE COMPRESSION ──
+function compressImage(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = () => {
+        let { width, height } = img;
+        const ratio = Math.min(MAX_IMG_DIM / width, MAX_IMG_DIM / height, 1);
+        width  = Math.round(width  * ratio);
+        height = Math.round(height * ratio);
+        const canvas = document.createElement('canvas');
+        canvas.width = width; canvas.height = height;
+        canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL('image/jpeg', IMG_QUALITY));
+      };
+      img.onerror = reject;
+      img.src = e.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+// ── FILE UPLOAD SETUP ──
+function setupFileUpload(inputId, previewId, areaId, setter) {
+  const input   = document.getElementById(inputId);
+  const preview = document.getElementById(previewId);
+  const area    = document.getElementById(areaId);
+
+  input.addEventListener('change', async () => {
+    const file = input.files[0];
+    if (!file) return;
+    try {
+      const b64 = await compressImage(file);
+      setter(b64);
+      preview.src = b64;
+      preview.style.display = 'block';
+      area.classList.add('drag');
+    } catch { alert('تعذّر معالجة الصورة.'); }
+  });
+
+  area.addEventListener('dragover', e => { e.preventDefault(); area.classList.add('drag'); });
+  area.addEventListener('dragleave', () => area.classList.remove('drag'));
+  area.addEventListener('drop', async e => {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    if (!file || !file.type.startsWith('image/')) return;
+    try {
+      const b64 = await compressImage(file);
+      setter(b64);
+      preview.src = b64;
+      preview.style.display = 'block';
+    } catch { alert('تعذّر معالجة الصورة.'); }
+  });
+}
+
+// ── CHECKBOXES ──
+document.querySelectorAll('.check-chip').forEach(chip => {
+  const cb = chip.querySelector('input[type="checkbox"]');
+  chip.addEventListener('click', () => {
+    cb.checked = !cb.checked;
+    chip.classList.toggle('checked', cb.checked);
+  });
+});
+
+// ── STORAGE ──
+function loadRecords() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch { return []; }
+}
+
+function saveRecords(records) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(records)); return true; }
+  catch {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(records.map(r => ({...r, idImage:null, passImage:null}))));
+      return 'slim';
+    } catch { return false; }
+  }
+}
+
+// ── FORM SUBMIT ──
+document.getElementById('teacher-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const btn   = document.getElementById('submit-btn');
+  const errEl = document.getElementById('form-error');
+  errEl.classList.remove('show');
+
+  const sections = [...document.querySelectorAll('#section-group input:checked')].map(c => c.value);
+  const name       = document.getElementById('f-name').value.trim();
+  const idNum      = document.getElementById('f-id').value.trim();
+  const phone      = document.getElementById('f-phone').value.trim();
+  const email      = document.getElementById('f-email').value.trim();
+  const degree     = document.getElementById('f-degree').value.trim();
+  const major      = document.getElementById('f-major').value.trim();
+  const position   = document.getElementById('f-position').value.trim();
+  const startdate  = document.getElementById('f-startdate').value;
+  const experience = document.getElementById('f-experience').value.trim();
+
+  const missing = [];
+  if (!name)      missing.push('الاسم الكامل');
+  if (!idNum)     missing.push('رقم الهوية');
+  if (!phone)     missing.push('رقم الجوال');
+  if (!email)     missing.push('البريد الإلكتروني');
+  if (!degree)    missing.push('المؤهل العلمي');
+  if (!major)     missing.push('التخصص');
+  if (!position)  missing.push('العمل الحالي');
+  if (!startdate) missing.push('تاريخ المباشرة');
+  if (!sections.length) missing.push('القسم');
+  if (!idImageB64)      missing.push('صورة الهوية');
+
+  if (missing.length) {
+    errEl.textContent = 'يرجى إكمال: ' + missing.join('، ');
+    errEl.classList.add('show');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> جارٍ الحفظ...';
+
+  const record = {
+    id: Date.now(),
+    submittedAt: new Date().toLocaleString('ar-SA'),
+    name, idNum, phone, email, degree, major, position, startdate, experience, sections,
+    idImage: idImageB64, passImage: passImageB64,
+  };
+
+  const records = loadRecords();
+  records.push(record);
+  const saved = saveRecords(records);
+
+  setTimeout(() => {
+    btn.disabled = false;
+    btn.innerHTML = '&#9989; إرسال البيانات';
+    if (saved === false) {
+      errEl.textContent = 'فشل الحفظ: مساحة التخزين ممتلئة.';
+      errEl.classList.add('show');
+    } else {
+      document.getElementById('success-overlay').classList.add('show');
+    }
+  }, 500);
+});
+
+// Reset form
+document.getElementById('reset-btn').addEventListener('click', () => {
+  document.getElementById('teacher-form').reset();
+  idImageB64 = null; passImageB64 = null;
+  document.getElementById('preview-id').style.display = 'none';
+  document.getElementById('preview-pass').style.display = 'none';
+  document.getElementById('upload-id-area').classList.remove('drag');
+  document.getElementById('upload-pass-area').classList.remove('drag');
+  document.querySelectorAll('.check-chip').forEach(c => {
+    c.classList.remove('checked');
+    c.querySelector('input').checked = false;
+  });
+  document.getElementById('form-error').classList.remove('show');
+});
+
+document.getElementById('success-close').addEventListener('click', () => {
+  document.getElementById('success-overlay').classList.remove('show');
+  document.getElementById('reset-btn').click();
+});
+
+// ── PASSWORD ──
+document.getElementById('pw-btn').addEventListener('click', checkPassword);
+document.getElementById('pw-input').addEventListener('keydown', e => { if (e.key === 'Enter') checkPassword(); });
+
+function checkPassword() {
+  const val   = document.getElementById('pw-input').value;
+  const errEl = document.getElementById('pw-error');
+  errEl.classList.remove('show');
+  if (val === HR_PASSWORD) {
+    loadHRDashboard();
+    showPage('hr');
+    document.getElementById('header-badge').textContent = 'HR Dashboard';
+  } else {
+    errEl.textContent = 'كلمة السر غير صحيحة.';
+    errEl.classList.add('show');
+    document.getElementById('pw-input').value = '';
+  }
+}
+
+// ── HR DASHBOARD ──
+function loadHRDashboard() {
+  allRecords  = loadRecords();
+  filteredRec = [...allRecords];
+  renderTable(filteredRec);
+  updateStats(allRecords);
+}
+
+function updateStats(records) {
+  document.getElementById('stat-total').textContent   = records.length;
+  document.getElementById('stat-primary').textContent = records.filter(r => r.sections?.includes('ابتدائي')).length;
+  document.getElementById('stat-middle').textContent  = records.filter(r => r.sections?.includes('متوسط')).length;
+  document.getElementById('stat-high').textContent    = records.filter(r => r.sections?.includes('ثانوي')).length;
+  document.getElementById('stat-intl').textContent    = records.filter(r => r.sections?.includes('عالمي')).length;
+}
+
+function renderTable(records) {
+  const tbody = document.getElementById('hr-tbody');
+  const empty = document.getElementById('empty-state');
+  tbody.innerHTML = '';
+  if (!records.length) { empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+
+  records.forEach((r, i) => {
+    const tr = document.createElement('tr');
+    const secTags = (r.sections || []).map(s => `<span class="sec-tag">${esc(s)}</span>`).join('');
+    const idThumb   = r.idImage   ? `<img class="thumb" src="${r.idImage}" alt="هوية ${esc(r.name)}" />` : `<div class="thumb-placeholder">لا صورة</div>`;
+    const passThumb = r.passImage ? `<img class="thumb" src="${r.passImage}" alt="جواز ${esc(r.name)}" />` : `<div class="thumb-placeholder">لا صورة</div>`;
+
+    tr.innerHTML = `
+      <td class="td-index">${i+1}</td>
+      <td class="td-name">${esc(r.name)}</td>
+      <td>${esc(r.idNum)}</td>
+      <td dir="ltr">${esc(r.phone)}</td>
+      <td dir="ltr" style="font-size:0.78rem">${esc(r.email)}</td>
+      <td>${esc(r.degree)}</td>
+      <td>${esc(r.major)}</td>
+      <td>${esc(r.position)}</td>
+      <td><div class="sections-tags">${secTags}</div></td>
+      <td dir="ltr" style="white-space:nowrap">${esc(r.startdate)}</td>
+      <td style="max-width:180px;font-size:0.78rem;white-space:pre-wrap">${esc(r.experience||'—')}</td>
+      <td>${idThumb}</td>
+      <td>${passThumb}</td>
+      <td style="white-space:nowrap;font-size:0.75rem">${esc(r.submittedAt)}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  document.querySelectorAll('#hr-tbody .thumb').forEach(img => {
+    img.addEventListener('click', () => openLightbox(img.src, img.alt));
+  });
+}
+
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// Search
+document.getElementById('hr-search').addEventListener('input', function() {
+  const q = this.value.trim().toLowerCase();
+  filteredRec = q ? allRecords.filter(r =>
+    r.name?.toLowerCase().includes(q) || r.idNum?.includes(q) || r.email?.toLowerCase().includes(q)
+  ) : [...allRecords];
+  renderTable(filteredRec);
+});
+
+// Logout
+document.getElementById('logout-btn').addEventListener('click', () => {
+  document.getElementById('pw-input').value = '';
+  showPage('password');
+  document.getElementById('header-badge').textContent = 'لوحة HR';
+});
+
+// ── LIGHTBOX ──
+function openLightbox(src, label) {
+  document.getElementById('lightbox-img').src = src;
+  document.getElementById('lightbox-label').textContent = label || '';
+  document.getElementById('lightbox').classList.add('show');
+}
+document.getElementById('lightbox-close').addEventListener('click', () => document.getElementById('lightbox').classList.remove('show'));
+document.getElementById('lightbox').addEventListener('click', e => { if (e.target === document.getElementById('lightbox')) document.getElementById('lightbox').classList.remove('show'); });
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    document.getElementById('lightbox').classList.remove('show');
+    document.getElementById('success-overlay').classList.remove('show');
+  }
+});
+
+// ── EXCEL EXPORT ──
+document.getElementById('export-btn').addEventListener('click', () => {
+  const records = filteredRec.length ? filteredRec : allRecords;
+  if (!records.length) { alert('لا توجد بيانات للتصدير.'); return; }
+
+  const headers = ['#','الاسم','رقم الهوية','رقم الجوال','البريد الإلكتروني','المؤهل','التخصص','العمل الحالي','القسم','تاريخ المباشرة','الخبرات','تاريخ الإرسال'];
+  const rows = records.map((r,i) => [
+    i+1, r.name||'', r.idNum||'', r.phone||'', r.email||'',
+    r.degree||'', r.major||'', r.position||'',
+    (r.sections||[]).join(' | '), r.startdate||'', r.experience||'', r.submittedAt||''
+  ]);
+
+  if (typeof XLSX !== 'undefined') {
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+    ws['!cols'] = headers.map(() => ({ wch: 22 }));
+    XLSX.utils.book_append_sheet(wb, ws, 'بيانات المعلمين');
+    XLSX.writeFile(wb, 'بيانات_المعلمين.xlsx');
+  } else {
+    // CSV fallback
+    const bom = '\uFEFF';
+    const csv = [headers, ...rows].map(row => row.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+    const url = URL.createObjectURL(new Blob([bom+csv], {type:'text/csv;charset=utf-8;'}));
+    const a = Object.assign(document.createElement('a'), {href:url, download:'بيانات_المعلمين.csv'});
+    a.click(); URL.revokeObjectURL(url);
+  }
+});
+
+// ── INIT ──
+setupFileUpload('f-id-img',   'preview-id',   'upload-id-area',   b => { idImageB64   = b; });
+setupFileUpload('f-pass-img', 'preview-pass', 'upload-pass-area', b => { passImageB64 = b; });
+route();
+</script>
+
+<!-- SheetJS for Excel (falls back to CSV if blocked) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"
+  crossorigin="anonymous" referrerpolicy="no-referrer"
+  onerror="console.warn('SheetJS not loaded, CSV fallback active.')"></script>
+
+</body>
+</html>
