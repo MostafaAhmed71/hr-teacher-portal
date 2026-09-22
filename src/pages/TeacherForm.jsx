@@ -12,7 +12,6 @@ export default function TeacherForm() {
     idNumber: '',
     phone: '',
     email: '',
-    degree: '',
     major: '',
     position: '',
     startDate: '',
@@ -22,6 +21,8 @@ export default function TeacherForm() {
 
   const [idFile, setIdFile] = useState(null)
   const [idPreview, setIdPreview] = useState(null)
+  const [degreeFile, setDegreeFile] = useState(null)
+  const [degreePreview, setDegreePreview] = useState(null)
   const [passFile, setPassFile] = useState(null)
   const [passPreview, setPassPreview] = useState(null)
 
@@ -42,6 +43,11 @@ export default function TeacherForm() {
   const handleIdFileChange = (file) => {
     setIdFile(file)
     setIdPreview(URL.createObjectURL(file))
+  }
+
+  const handleDegreeFileChange = (file) => {
+    setDegreeFile(file)
+    setDegreePreview(URL.createObjectURL(file))
   }
 
   const handlePassFileChange = (file) => {
@@ -82,7 +88,7 @@ export default function TeacherForm() {
     if (!formData.idNumber.trim()) missing.push('رقم الهوية الوطنية')
     if (!formData.phone.trim()) missing.push('رقم الجوال')
     if (!formData.email.trim()) missing.push('البريد الإلكتروني')
-    if (!formData.degree.trim()) missing.push('المؤهل العلمي')
+    if (!degreeFile) missing.push('صورة المؤهل العلمي')
     if (!formData.major.trim()) missing.push('التخصص')
     if (!formData.position.trim()) missing.push('العمل الحالي')
     if (!formData.startDate) missing.push('تاريخ المباشرة')
@@ -99,6 +105,7 @@ export default function TeacherForm() {
     try {
       // 1. Upload Images to Supabase Storage
       const idImageUrl = await uploadFileToSupabase(idFile, 'id-cards')
+      const degreeImageUrl = await uploadFileToSupabase(degreeFile, 'qualifications')
       let passImageUrl = null
       if (passFile) {
         passImageUrl = await uploadFileToSupabase(passFile, 'passports')
@@ -111,7 +118,7 @@ export default function TeacherForm() {
           id_number: formData.idNumber.trim(),
           phone: formData.phone.trim(),
           email: formData.email.trim(),
-          degree: formData.degree.trim(),
+          degree: degreeImageUrl,
           major: formData.major.trim(),
           position: formData.position.trim(),
           start_date: formData.startDate,
@@ -140,7 +147,6 @@ export default function TeacherForm() {
       idNumber: '',
       phone: '',
       email: '',
-      degree: '',
       major: '',
       position: '',
       startDate: '',
@@ -149,6 +155,8 @@ export default function TeacherForm() {
     })
     setIdFile(null)
     setIdPreview(null)
+    setDegreeFile(null)
+    setDegreePreview(null)
     setPassFile(null)
     setPassPreview(null)
     setError('')
@@ -216,17 +224,15 @@ export default function TeacherForm() {
               />
             </div>
 
-            <div className="form-group">
-              <label>
-                المؤهل العلمي <span className="req">*</span>
-              </label>
-              <input
-                type="text"
-                placeholder="مثال: بكالوريوس تربية / ماجستير..."
-                value={formData.degree}
-                onChange={(e) => setFormData({ ...formData, degree: e.target.value })}
-              />
-            </div>
+            <FileUpload
+              label="صورة المؤهل العلمي"
+              required
+              icon={<Icons.FileText />}
+              subtext="صورة واضحة للمؤهل بصيغة JPG / PNG / WebP"
+              file={degreeFile}
+              preview={degreePreview}
+              onChange={handleDegreeFileChange}
+            />
 
             <div className="form-group">
               <label>
