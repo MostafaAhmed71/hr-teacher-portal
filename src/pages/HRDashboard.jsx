@@ -62,7 +62,7 @@ export default function HRDashboard({ onLogout }) {
       'رقم الهوية',
       'رقم الجوال',
       'البريد الإلكتروني',
-      'المؤهل العلمي',
+      'رابط صورة المؤهل العلمي',
       'التخصص',
       'العمل الحالي',
       'القسم',
@@ -202,7 +202,24 @@ export default function HRDashboard({ onLogout }) {
                   <td dir="ltr" style={{ fontSize: '0.78rem' }}>
                     {t.email}
                   </td>
-                  <td>{t.degree}</td>
+                  <td>
+                    {t.degree?.startsWith('http') ? (
+                      <img
+                        src={t.degree}
+                        alt={`مؤهل ${t.name}`}
+                        className="thumb"
+                        onClick={() =>
+                          setLightbox({
+                            open: true,
+                            src: t.degree,
+                            label: `صورة مؤهل: ${t.name}`,
+                          })
+                        }
+                      />
+                    ) : (
+                      <div className="thumb-placeholder">{t.degree || 'لا صورة'}</div>
+                    )}
+                  </td>
                   <td>{t.major}</td>
                   <td>{t.position}</td>
                   <td>
