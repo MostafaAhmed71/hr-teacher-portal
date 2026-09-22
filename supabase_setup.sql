@@ -7,7 +7,7 @@ create table if not exists public.teachers (
   id_number    text not null,
   phone        text not null,
   email        text not null,
-  degree       text not null,
+  degree       text not null, -- رابط صورة المؤهل العلمي
   major        text not null,
   position     text not null,
   start_date   date not null,
